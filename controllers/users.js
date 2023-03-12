@@ -6,10 +6,14 @@ const getUsers = (req, res) => User.find({})
 
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
+    .then((user) => {
+      if (user === null) {
         return res.status(404).send({ message: 'Пользователь по указанному _id не найден.' });
+      }
+      return res.status(200).send(user);
+    }).catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные при поиске пользователя.' });
       }
       return res.status(500).send({ message: 'Ошибка по умолчанию.' });
     });
@@ -28,35 +32,48 @@ const createUser = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  const { name, about, avatar } = req.body;
-  if (name === undefined && about === undefined && avatar === undefined) {
-    return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
-  }
-  return User.findByIdAndUpdate(req.user._id, req.body)
-    .then((user) => {
-      res.status(200).send(user);
-    })
+  User.findByIdAndUpdate(
+    req.user._id,
+    req.body,
+    {
+      new: true, // обработчик then получит на вход обновлённую запись
+      runValidators: true, // данные будут валидированы перед изменением
+      upsert: true, // если пользователь не найден, он будет создан
+    },
+  ).then((user) => {
+    res.status(200).send(user);
+  })
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
+      }
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
       }
       return res.status(500).send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
 const updateAvatar = (req, res) => {
-  if (req.body.avatar === undefined) {
-    return res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
-  }
-  return User.findByIdAndUpdate(req.user._id, req.body)
-    .then((user) => {
-      res.status(200).send(user);
-    })
+  User.findByIdAndUpdate(
+    req.user._id,
+    req.body,
+    {
+      new: true, // обработчик then получит на вход обновлённую запись
+      runValidators: true, // данные будут валидированы перед изменением
+      upsert: true, // если пользователь не найден, он будет создан
+    },
+  ).then((user) => {
+    res.status(200).send(user);
+  })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
+        return res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
+      }
+      return res.status(500).send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
