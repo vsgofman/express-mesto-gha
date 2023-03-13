@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { validateUrl } = require('../utils/validateUrl');
 
 const userSchema = new mongoose.Schema(
   {
@@ -17,6 +18,7 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: String,
       required: true,
+      validate: { validator: validateUrl, message: 'Введите валидную ссылку' },
     },
   },
   {

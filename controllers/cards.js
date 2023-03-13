@@ -2,7 +2,7 @@ const Card = require('../models/card');
 
 const getCards = (req, res) => Card.find({})
   .then((cards) => res.status(200).send(cards))
-  .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию.' }));
+  .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка.' }));
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
@@ -12,7 +12,7 @@ const createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
       }
-      return res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
@@ -27,7 +27,7 @@ const deleteCardById = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки.' });
       }
-      return res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
@@ -44,7 +44,7 @@ const addLike = (req, res) => Card.findByIdAndUpdate(
   if (err.name === 'CastError') {
     return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
   }
-  return res.status(500).send(err);
+  return res.status(500).send({ message: 'На сервере произошла ошибка.' });
 });
 
 const deleteLike = (req, res) => Card.findByIdAndUpdate(
@@ -60,7 +60,7 @@ const deleteLike = (req, res) => Card.findByIdAndUpdate(
   if (err.name === 'CastError') {
     return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
   }
-  return res.status(500).send(err);
+  return res.status(500).send({ message: 'На сервере произошла ошибка.' });
 });
 
 module.exports = {

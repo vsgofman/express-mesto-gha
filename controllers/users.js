@@ -2,7 +2,7 @@ const User = require('../models/user');
 
 const getUsers = (req, res) => User.find({})
   .then((users) => res.status(200).send(users))
-  .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию.' }));
+  .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка.' }));
 
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
@@ -15,7 +15,7 @@ const getUserById = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при поиске пользователя.' });
       }
-      return res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
@@ -27,7 +27,7 @@ const createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
       }
-      return res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
@@ -50,7 +50,7 @@ const updateProfile = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
       }
-      return res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
@@ -73,7 +73,7 @@ const updateAvatar = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
       }
-      return res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
