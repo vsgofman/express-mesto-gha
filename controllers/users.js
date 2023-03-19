@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const getUsers = (req, res) => User.find({})
@@ -31,6 +32,20 @@ const createUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+      }
+      return res.status(500).send({ message: 'На сервере произошла ошибка.' });
+    });
+};
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'jwt', { expiresIn: '7d' });
+      res.status(200).send(token);
+    }).catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(401).send({ message: 'Ошибка аутентификации.' });
       }
       return res.status(500).send({ message: 'На сервере произошла ошибка.' });
     });
@@ -86,6 +101,7 @@ module.exports = {
   getUsers,
   getUserById,
   createUser,
+  login,
   updateProfile,
   updateAvatar,
 };
