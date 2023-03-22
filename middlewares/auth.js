@@ -10,9 +10,11 @@ module.exports.auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'jwt');
   } catch (err) {
+    if (err.name === 'JsonWebTokenError') {
+      return res.status(401).send({ message: 'Прислан некорректный токен' });
+    }
     return res.status(401).send({ message: 'Необходима авторизация 2' });
   }
-  console.log(payload);
   req.user = payload;
   return next();
 };

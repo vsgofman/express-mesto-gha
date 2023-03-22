@@ -22,6 +22,7 @@ const getUserById = (req, res) => {
 };
 
 // POST /signup
+// убрать из тела ответа поле password, возвращается
 const createUser = (req, res) => {
   const {
     email, password, name, about, avatar,
@@ -31,19 +32,24 @@ const createUser = (req, res) => {
       email, password: hash, name, about, avatar,
     })).then((user) => res.status(201).send(user))
     .catch((err) => {
+      console.log(err);
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+      }
+      if (err.code === 11000) {
+        return res.status(409).send({ message: 'Пользователь с таким email уже существует.' });
       }
       return res.status(500).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
+// POST /signin
 const login = (req, res) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'jwt', { expiresIn: '7d' });
-      res.status(200).send(token);
+      const jsontoken = jwt.sign({ _id: user._id }, 'jwt', { expiresIn: '7d' });
+      res.status(200).send({ token: jsontoken });
     }).catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(401).send({ message: 'Ошибка аутентификации.' });
