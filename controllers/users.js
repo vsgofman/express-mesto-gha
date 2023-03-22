@@ -21,6 +21,7 @@ const getUserById = (req, res) => {
     });
 };
 
+// POST /signup
 const createUser = (req, res) => {
   const {
     email, password, name, about, avatar,
