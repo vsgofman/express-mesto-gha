@@ -17,17 +17,22 @@ const createCard = (req, res) => {
 };
 
 const deleteCardById = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findOne({ _id: req.params.cardId })
     .then((card) => {
       if (card === null) {
         return res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
       }
-      return res.status(200).send({ message: 'Карточка удалена.' });
-    }).catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки.' });
+      if (card.owner !== req.user._id) {
+        return res.status(403).send({ message: 'Вы можете удалить только свою карточку' });
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка.' });
+      return Card.findByIdAndRemove(req.params.cardId)
+        .then(() => res.status(200).send({ message: 'Карточка удалена.' }))
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            return res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки.' });
+          }
+          return res.status(500).send({ message: 'На сервере произошла ошибка.' });
+        });
     });
 };
 
