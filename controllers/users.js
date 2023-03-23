@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const jsonwebtoken = require('jsonwebtoken');
 const User = require('../models/user');
 
 const getUsers = (req, res) => User.find({})
@@ -23,7 +23,7 @@ const getUserById = (req, res) => {
 
 // POST /signup
 // убрать из тела ответа поле password, возвращается
-const createUser = (req, res) => {
+const register = (req, res) => {
   const {
     email, password, name, about, avatar,
   } = req.body;
@@ -32,7 +32,6 @@ const createUser = (req, res) => {
       email, password: hash, name, about, avatar,
     })).then((user) => res.status(201).send(user))
     .catch((err) => {
-      console.log(err);
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
       }
@@ -48,11 +47,23 @@ const login = (req, res) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const jsontoken = jwt.sign({ _id: user._id }, 'jwt', { expiresIn: '7d' });
-      res.status(200).send({ token: jsontoken });
+      const jwt = jsonwebtoken.sign({ _id: user._id }, 'jwt', { expiresIn: '7d' });
+      res.status(200).send({ token: jwt });
     }).catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(401).send({ message: 'Ошибка аутентификации.' });
+      }
+      return res.status(500).send({ message: 'На сервере произошла ошибка.' });
+    });
+};
+
+// GET users/me
+const getCurrentUser = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Пользователь не найден.' });
       }
       return res.status(500).send({ message: 'На сервере произошла ошибка.' });
     });
@@ -107,8 +118,9 @@ const updateAvatar = (req, res) => {
 module.exports = {
   getUsers,
   getUserById,
-  createUser,
+  register,
   login,
+  getCurrentUser,
   updateProfile,
   updateAvatar,
 };
