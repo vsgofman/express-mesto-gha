@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
-const { validateUrl } = require('../utils/validateUrl');
+const UrlRegExp = require('../utils/validateUrl');
 
 const userSchema = new mongoose.Schema(
   {
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      validate: { validator: validateUrl, message: 'Введите валидную ссылку' },
+      validate: { validator: UrlRegExp, message: 'Введите валидную ссылку' },
       default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     },
   },

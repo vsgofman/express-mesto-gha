@@ -5,7 +5,7 @@ const { errors, Joi, celebrate } = require('celebrate');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const { login, register } = require('./controllers/users');
-const { validateUrl } = require('./utils/validateUrl');
+const UrlRegExp = require('./utils/validateUrl');
 const { auth } = require('./middlewares/auth');
 
 const app = express();
@@ -28,7 +28,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required().min(6),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(validateUrl),
+    avatar: Joi.string().pattern(UrlRegExp),
   }),
 }), register);
 
