@@ -79,8 +79,10 @@ const getCurrentUser = (req, res, next) => {
 const updateProfile = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
-    req.body.name,
-    req.body.about,
+    {
+      name: req.body.name,
+      about: req.body.about,
+    },
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
@@ -104,7 +106,9 @@ const updateProfile = (req, res, next) => {
 const updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
-    req.body.avatar,
+    {
+      avatar: req.body.avatar,
+    },
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
