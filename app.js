@@ -19,7 +19,7 @@ const allowedCors = [
   'localhost:3000',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-  /(https|http)?:\/\/(?:www\.|(?!www))mesto.online.nomoredomains.work\/[a-z]+\/|[a-z]+\/|[a-z]+(\/|)/,
+  /(https|http)?:\/\/(?:www\.|(?!www))vsgof.mesto.nomoredomains.monster\/[a-z]+\/|[a-z]+\/|[a-z]+(\/|)/,
 ];
 
 app.use((req, res, next) => {
@@ -40,7 +40,7 @@ app.use((req, res, next) => {
   return next();
 });
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
